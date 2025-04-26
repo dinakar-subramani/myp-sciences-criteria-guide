@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MYP Sciences Criteria Interactive Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #000000;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .row-container {
+      display: flex;
+      gap: 30px;
+      margin-top: 50px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .criterion-box {
+      background-color: #ffd1dc;
+      color: black;
+      padding: 60px;
+      width: 150px;
+      height: 150px;
+      text-align: center;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+      transition: transform 0.5s ease, background-color 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .criterion-box:hover {
+      transform: scale(1.2);
+      background-color: #ffe4ec;
+    }
+
+    .criterion-box:nth-child(1) {
+      background-color: #ffd1dc; /* Soft pink */
+    }
+    .criterion-box:nth-child(2) {
+      background-color: #c1f0f6; /* Soft teal */
+    }
+    .criterion-box:nth-child(3) {
+      background-color: #d1ffd6; /* Soft mint green */
+    }
+    .criterion-box:nth-child(4) {
+      background-color: #f6e1ff; /* Soft lavender */
+    }
+
+    /* Popup Overlay */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .popup-card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0px 0px 30px rgba(255, 255, 255, 0.3);
+      text-align: left;
+      position: relative;
+      transform: scale(0.2);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .popup-card.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .content-box {
+      background-color: #f0f0f0;
+      color: black;
+      margin: 5px;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .content-box:hover {
+      background-color: #c0e0ff;
+    }
+
+    h1 {
+      color: white;
+    }
+
+    .nested-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .nested-popup {
+      background: white;
+      padding: 30px;
+      width: 300px;
+      max-width: 80%;
+      box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      text-align: left;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .nested-popup.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <h1>MYP Sciences Criteria</h1>
+
+  <div class="row-container">
+    <div class="criterion-box" onclick="openPopup('A')">Criterion A</div>
+    <div class="criterion-box" onclick="openPopup('B')">Criterion B</div>
+    <div class="criterion-box" onclick="openPopup('C')">Criterion C</div>
+    <div class="criterion-box" onclick="openPopup('D')">Criterion D</div>
+  </div>
+
+  <!-- Popup Overlay -->
+  <div id="popup" class="popup-overlay" onclick="closePopup(event)">
+    <div class="popup-card" id="popupContent">
+      <span class="close-btn" onclick="closePopup(event)">&times;</span>
+      <h2 id="popupTitle"></h2>
+      <div id="popupContentBoxes"></div>
+    </div>
+  </div>
+
+  <!-- Nested Popup Overlay -->
+  <div id="nestedPopup" class="nested-popup-overlay" onclick="closeNestedPopup(event)">
+    <div class="nested-popup" id="nestedPopupContent">
+      <span class="close-btn" onclick="closeNestedPopup(event)">&times;</span>
+      <div id="nestedPopupText"></div>
+    </div>
+  </div>
+
+<script>
+  const data = {
+    A: {
+      title: "Criterion A: Knowing and Understanding",
+      items: [
+        { text: "Concept based question", details: "Questions that test your understanding of major scientific concepts, not just facts." },
+        { text: "Application-level questions", details: "Using your scientific knowledge to solve problems in familiar and unfamiliar situations." }
+      ]
+    },
+    B: {
+      title: "Criterion B: Inquiring and Designing",
+      items: [
+        { text: "Research question", details: "Formulating a clear, focused, and testable question that your investigation will answer." },
+        { text: "Hypothesis", details: "Making a prediction about the investigation's outcome, explained with scientific reasoning." },
+        { text: "Variables", details: "Identifying the independent, dependent, and controlled variables for the investigation." },
+        { text: "Manipulating the variables", details: "Manipulating the Variables", details: "Planning how you will change the independent variable and measure the dependent variable accurately." },
+        { text: "Materials and Method", details: "Listing the necessary equipment and writing a clear, logical, and safe procedure that others can follow easily." }
+      ]
+    },
+    C: {
+      title: "Criterion C: Processing and Evaluating",
+      items: [
+        { text: "Data tables and graphs", details: "Organizing your collected data neatly in tables and presenting it visually through appropriate graphs or charts." },
+        { text: "Results", details: "Accurately interpreting the data, identifying patterns, and explaining what the results show using scientific reasoning." },
+        { text: "Validating hypothesis", details: "Judging whether your results support or disprove your original hypothesis, with evidence." },
+        { text: "Validating method", details: "Evaluating the investigation method to see if it was fair, reliable, and valid." },
+        { text: "Improvements", details: "Suggesting specific ways to make your investigation method better if you were to do it again." },
+        { text: "Extensions", details: "Proposing how you could expand the investigation to explore new questions or collect more detailed data." }
+      ]
+    },
+    D: {
+      title: "Criterion D: Reflecting on the impacts of Science",
+      items: [
+        { text: "Implications", details: "Understanding how scientific developments affect people, society, and the environment.", nestedItems: [
+            { text: "Ethical", details: "Considering whether using science respects moral and ethical values (e.g., fairness, harm to living things)." },
+            { text: "Economic", details: "Thinking about how science can impact money, resources, industries, and economies." },
+            { text: "Social", details: "Examining how governments and policies are influenced by or influence science and technology." },
+            { text: "Political", details: "Considering the political ramifications." },
+            { text: "Environmental", details: "Evaluating how science affects the natural world, including positive and negative impacts." }
+          ]
+        },
+        { text: "Writing skills", details: "Communicating ideas clearly, logically, and precisely in your scientific writing." },
+        { text: "Use of scientific language", details: "Using correct scientific vocabulary to show understanding and explain ideas accurately" },
+        { text: "Documenting sources", details: "Citing all references completely and correctly to give credit to the original authors and avoid plagiarism." }
+      ]
+    }
+  };
+
+  function openPopup(criterion) {
+    const popup = document.getElementById('popup');
+    const popupCard = document.getElementById('popupContent');
+    const popupContentBoxes = document.getElementById('popupContentBoxes');
+    popup.style.display = 'flex';
+    
+    setTimeout(() => {
+      popupCard.classList.add('active');
+    }, 50);
+
+    document.getElementById('popupTitle').innerText = data[criterion].title;
+    popupContentBoxes.innerHTML = "";
+    
+    data[criterion].items.forEach(item => {
+      const box = document.createElement('div');
+      box.classList.add('content-box');
+      box.innerText = item.text;
+      if (item.nestedItems) {
+        box.onclick = () => openNestedPopup(item.nestedItems);
+      } else {
+        box.onclick = () => openNestedPopup(item.details);
+      }
+      popupContentBoxes.appendChild(box);
+    });
+  }
+
+  function closePopup(event) {
+    const popup = document.getElementById('popup');
+    const popupCard = document.getElementById('popupContent');
+    if (event.target.id === 'popup' || event.target.className === 'close-btn') {
+      popupCard.classList.remove('active');
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 500);
+    }
+  }
+
+  function openNestedPopup(items) {
+    const nestedPopup = document.getElementById('nestedPopup');
+    const nestedPopupContent = document.getElementById('nestedPopupContent');
+    const nestedPopupText = document.getElementById('nestedPopupText');
+
+    nestedPopup.style.display = 'flex';
+    
+    setTimeout(() => {
+      nestedPopupContent.classList.add('active');
+    }, 50);
+
+    nestedPopupText.innerHTML = "";
+    
+    if (Array.isArray(items)) {
+      items.forEach(item => {
+        const box = document.createElement('div');
+        box.classList.add('content-box');
+        box.innerText = item.text;
+        box.onclick = () => openNestedPopup(item.details);
+        nestedPopupText.appendChild(box);
+      });
+    } else {
+      nestedPopupText.innerHTML = items;
+    }
+  }
+
+  function closeNestedPopup(event) {
+    const nestedPopup = document.getElementById('nestedPopup');
+    const nestedPopupContent = document.getElementById('nestedPopupContent');
+    if (event.target.id === 'nestedPopup' || event.target.className === 'close-btn') {
+      nestedPopupContent.classList.remove('active');
+      setTimeout(() => {
+        nestedPopup.style.display = 'none';
+      }, 500);
+    }
+  }
+</script>
+
+</body>
+</html>
